@@ -38,30 +38,10 @@ public class ApiGoodsController {
     @ApiOperation(value = "获取任务信息")
     //    @RequestParam: 把请求中指定名称的参数给控制器中的形参赋值
     public R list(@RequestParam Map<String, Object> map){
-
             List<GoodsEntity> goodsList = goodsService.queryList(map);
+
+
             return R.ok().put("goodsList", goodsList);
-    	//List<GoodsEntity> goodsList = goodsService.queryList(map);
-
-    	//用户
-       /* UserEntity userEntity = userDao.finaUser(16);
-        if(StringUtils.hasLength(userEntity.getAddress())){
-            List<GoodsEntity> list = new ArrayList<>();
-            //System.out.println(userEntity.getAddress() + "=2=" );
-
-            for (GoodsEntity goodsEntity : goodsList) {
-               // System.out.println(userEntity.getAddress() + "==1" + goodsEntity.getLocation());
-               // System.out.println("-----------------");
-                if (goodsEntity.getLocation().equals(userEntity.getAddress())) {
-                    list.add(goodsEntity);
-                    //System.out.println(userEntity.getAddress() + "=2=" + goodsEntity.getLocation());
-                }
-            }
-            return R.ok().put("goodsList", list);
-            //System.out.println("=======================list=========");
-            //for (GoodsEntity goodsEntity : list) {
-            // System.out.println(goodsEntity.getLocation());}
-        }else return R.ok().put("goodsList", goodsList);*/
     }
     
     @AuthIgnore
@@ -69,7 +49,7 @@ public class ApiGoodsController {
     @ApiOperation(value = "获取任务详情")
     public R detail(int id){
     	GoodsEntity goods = goodsService.queryObject(id);
-        System.out.println("hello");System.out.println(id);
+
     	return R.ok().put("goods", goods);
     }
     
@@ -93,7 +73,6 @@ public class ApiGoodsController {
         return R.ok();
     }
 
-
     @GetMapping("myPublish")
     @ApiOperation(value = "获取任务信息")
     public R myPublish(@LoginUser UserEntity user, @RequestParam Map<String, Object> map){
@@ -102,7 +81,6 @@ public class ApiGoodsController {
     	List<GoodsEntity> goodsList = goodsService.queryList(map);
         return R.ok().put("goodsList", goodsList);
     }
-
 
     @PostMapping("update")
     @ApiOperation(value = "获取任务信息")
@@ -113,7 +91,4 @@ public class ApiGoodsController {
 
         return R.ok();
     }
-
-
-
 }

@@ -60,6 +60,7 @@ public class ShiroConfig {
         filterMap.put("/api/**", "anon");
         filterMap.put("/img/**", "anon");
         filterMap.put("/fileupload/**", "anon");
+        filterMap.put("/alipay/**", "anon");
 
         //swagger配置
         filterMap.put("/swagger-ui.html", "anon");
