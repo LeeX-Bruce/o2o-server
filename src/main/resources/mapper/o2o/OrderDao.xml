@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.help.modules.o2o.dao.OrderDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.help.modules.o2o.entity.OrderEntity" id="orderMap">
+        <result property="orderId" column="order_id"/>
+        <result property="orderNumber" column="order_number"/>
+        <result property="order_price" column="order_price"/>
+		<result property="order_location" column="order_location"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="userId" column="user_id"/>
+        <result property="createTime" column="create_time"/>
+		<association property="user" javaType="com.help.modules.o2o.entity.UserEntity">
+			<result property="nickname" column="nickname"/>
+			<result property="avatarUrl" column="avatar_url"/>
+			<result property="mobile" column="mobile"/>
+			<result property="address" column="address"/>
+			<result property="email" column="email"/>
+		</association>
+		<association property="orderGoods" javaType="com.help.modules.o2o.entity.OrderGoodsEntity">
+			<result property="orderId" column="order_id"/>
+			<result property="goodsId" column="goods_id"/>
+			<result property="goodsName" column="goods_name"/>
+			<result property="num" column="num"/>
+			<result property="picUrl" column="pic_url"/>
+			<result property="price" column="price"/>
+			<result property="location" column="location"/>
+
+			<result property="qtime" column="qtime"/>
+		</association>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.help.modules.o2o.entity.OrderEntity">
+		select * from o2o_order where order_id = #{value}
+	</select>
+
+	<select id="queryList" resultMap="orderMap">
+		select o.*,og.goods_name goods_name,og.price,og.location,og.qtime,u.nickname from o2o_order o
+		left join o2o_order_goods og on o.order_id=og.order_id left join o2o_user u on o.user_id=u.id
+		<where>
+			<if test="orderStatus != null and orderStatus != -1">
+				order_status = #{orderStatus}
+			</if>
+			<if test="orderNumber != null and orderNumber != ''">
+				and order_number like '%${orderNumber}%'
+			</if>
+			<if test="userId != null">
+				and user_id = #{userId}
+			</if>
+		</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by order_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from o2o_order 
+		<where>
+			<if test="orderStatus != null and orderStatus != -1">
+				order_status = #{orderStatus}
+			</if>
+			<if test="orderNumber != null and orderNumber != ''">
+				and order_number like '%${orderNumber}%'
+			</if>
+			<if test="userId != null">
+				and user_id = #{userId}
+			</if>
+		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.help.modules.o2o.entity.OrderEntity" useGeneratedKeys="true" keyProperty="orderId">
+		insert into o2o_order
+		(
+			`user_id`, 
+			`order_number`,
+			`order_status`,
+			`order_price`,
+			`order_location`,
+			`create_time`
+		)
+		values
+		(
+			#{userId}, 
+			#{orderNumber},
+			#{orderStatus},
+			#{order_price},
+			#{order_location},
+			#{createTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.help.modules.o2o.entity.OrderEntity">
+		update o2o_order 
+		<set>
+			<if test="orderNumber != null">`order_number` = #{orderNumber}, </if>
+			<if test="order_price != null">`order_price` = #{order_price}, </if>
+			<if test="order_location != null">`order_location` = #{order_location}, </if>
+			<if test="orderStatus != null">`order_status` = #{orderStatus}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}</if>
+		</set>
+		where order_id = #{orderId}
+	</update>
+	
+	<delete id="delete">
+		delete from o2o_order where order_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from o2o_order where order_id in 
+		<foreach item="orderId" collection="array" open="(" separator="," close=")">
+			#{orderId}
+		</foreach>
+	</delete>
+	
+	<update id="updateByOrderNumber" parameterType="com.help.modules.o2o.entity.OrderEntity">
+		update o2o_order set `order_status` = #{orderStatus} where order_number = #{orderNumber}
+	</update>
+
+</mapper>

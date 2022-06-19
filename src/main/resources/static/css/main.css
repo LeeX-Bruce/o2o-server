@@ -1,0 +1,51 @@
+html { overflow-x:hidden; }
+.main-footer {
+    padding: 7px;
+    color: #444;
+    border-top: 1px solid #eee;
+}
+
+[v-cloak] {
+  display: none;
+}
+
+.grid-btn{
+	margin-bottom:12px;
+}
+.grid-btn .btn{
+	margin-right:10px;
+}
+.pointer{cursor: pointer;}
+
+.ml-10 { margin-left:0 !important; }
+@media (min-width: 768px) {
+	.ml-10 { margin-left:10px !important; }
+	.col-sm-10 {width: 70%;padding-left: 0px;}
+	.col-sm-2 {width: 24%;}
+}
+tbody > tr > th {font-weight: normal; }
+.panel .table { margin:0 0; }
+.panel .pagination { margin:0; }
+.panel-default>.panel-heading {background-color: #f5f5f5;}
+.form-horizontal .form-group {margin-left:0px;margin-right:0px;}
+body{
+	background: transparent;
+}
+.ui-jqgrid td input[type=checkbox], .ui-jqgrid td input[type=radio] {
+    margin: 4px 0 0 !important;
+}
+.img-wrap{
+	position: relative;
+}
+.img-wrap .img-remove{
+	position: absolute;
+    width: 20px;
+    height: 20px;
+    top: -10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.a-detail{
+	cursor: pointer;
+}

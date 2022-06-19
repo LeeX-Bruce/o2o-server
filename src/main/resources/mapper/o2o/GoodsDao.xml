@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.help.modules.o2o.dao.GoodsDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.help.modules.o2o.entity.GoodsEntity" id="goodsMap">
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsName" column="goods_name"/>
+		<result property="location" column="location"/>
+        <result property="price" column="price"/>
+		<result property="qtime" column="qtime"/>
+        <result property="picUrl" column="pic_url"/>
+        <result property="describe" column="describe"/>
+        <result property="userId" column="user_id"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <association property="category" javaType="com.help.modules.o2o.entity.CategoryEntity">
+        	<id property="categoryId" column="category_id"/>
+        	<result property="categoryName" column="category_name"/>
+        </association>
+        <association property="user" javaType="com.help.modules.o2o.entity.UserEntity">
+        	<result property="nickname" column="nickname"/>
+        	<result property="avatarUrl" column="avatar_url"/>
+        	<result property="mobile" column="mobile"/>
+        	<result property="address" column="address"/>
+        	<result property="email" column="email"/>
+        </association>
+    </resultMap>
+    
+    <sql id="base_column">
+    	goods_id,goods_name,location,category_id,price,qtime,create_time
+    </sql>
+
+	<select id="queryObject" resultMap="goodsMap">
+		select g.*, 
+		 u.nickname nickname, u.avatar_url avatar_url, u.mobile, u.address, u.email
+		 from o2o_goods g left join o2o_category c on g.category_id = c.category_id
+		 left join o2o_user u on g.user_id = u.id
+		where g.goods_id = #{value}
+	</select>
+
+	<select id="queryList" resultMap="goodsMap">
+		select g.user_id,g.status,g.goods_id,g.goods_name,g.location,g.pic_url,g.category_id,g.price,g.qtime, g.create_time,c.category_name,
+		u.nickname nickname, u.avatar_url avatar_url
+		from o2o_goods g left join o2o_category c on g.category_id = c.category_id
+		left join o2o_user u on g.user_id = u.id
+		<where>
+			<if test="categoryId != null and categoryId != 0">
+				c.category_id = #{categoryId}
+			</if>
+			<if test="goodsName != null and goodsName != ''">
+				and g.goods_name like '%${goodsName}%'
+			</if>
+			<if test="userId != null and userId != ''">
+				and g.user_id = #{userId}
+			</if>
+		</where>
+		
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by goods_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from o2o_goods 
+		<where>
+			<if test="categoryId != null and categoryId != 0">
+				category_id = #{categoryId}
+			</if>
+			<if test="goodsName != null and goodsName != ''">
+				and goods_name like '%${goodsName}%'
+			</if>
+			<if test="userId != null and userId != ''">
+				and user_id = #{userId}
+			</if>
+		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.help.modules.o2o.entity.GoodsEntity" useGeneratedKeys="true" keyProperty="goodsId">
+		insert into o2o_goods
+		(
+			`goods_name`, 
+			`category_id`,
+			`location`,
+			`price`,
+			`qtime`,
+			`pic_url`, 
+			`describe`, 
+			`user_id`,
+			`status`,
+			`create_time`
+
+		)
+		values
+		(
+			#{goodsName},
+			#{categoryId},
+			#{location},
+			#{price},
+			#{qtime},
+			#{picUrl}, 
+			#{describe}, 
+			#{userId}, 
+			#{status}, 
+			#{createTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.help.modules.o2o.entity.GoodsEntity">
+		update o2o_goods 
+		<set>
+			<if test="goodsName != null">`goods_name` = #{goodsName}, </if>
+			<if test="location != null">`location` = #{location}, </if>
+			<if test="categoryId != null">`category_id` = #{categoryId}, </if>
+			<if test="price != null">`price` = #{price}, </if>
+			<if test="qtime != null">`qtime` = #{qtime}, </if>
+
+			<if test="picUrl != null">`pic_url` = #{picUrl}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="describe != null">`describe` = #{describe}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}</if>
+		</set>
+		where goods_id = #{goodsId}
+	</update>
+	
+	<delete id="delete">
+		delete from o2o_goods where goods_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from o2o_goods where goods_id in 
+		<foreach item="goodsId" collection="array" open="(" separator="," close=")">
+			#{goodsId}
+		</foreach>
+	</delete>
+
+</mapper>
